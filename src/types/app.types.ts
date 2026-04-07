@@ -32,3 +32,22 @@ export const CATEGORIES: {
   { id: "memorization", label: "Memorization", icon: "📚", href: "/categories/memorization" },
   { id: "diet", label: "Diet", icon: "🥗", href: "/categories/diet" },
 ];
+
+export const OBSTACLE_OPTIONS = [
+  "I don't have time",
+  "I forget to",
+  "Life happens",
+  "I lose motivation",
+  "It's hard to start",
+] as const;
+
+export const SUPPORT_OPTIONS = [
+  "Daily reminders",
+  "Accountability checks",
+  "A coach pushing me",
+  "Seeing my progress",
+  "Celebrating wins",
+] as const;
+
+export type ObstacleOption = (typeof OBSTACLE_OPTIONS)[number];
+export type SupportOption = (typeof SUPPORT_OPTIONS)[number];

@@ -34,7 +34,7 @@ export default function SignupPage() {
     } else {
       // Supabase sends a confirmation email by default.
       // You can disable this in Supabase Dashboard → Auth → Settings → Confirm email.
-      router.replace("/dashboard");
+      router.replace("/onboarding");
     }
   };
 

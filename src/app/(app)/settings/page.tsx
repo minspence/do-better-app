@@ -3,17 +3,24 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { useProfile } from "@/lib/hooks/useProfile";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { profile, loading, updateProfile } = useProfile();
+  const supabase = createClient();
 
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +31,13 @@ export default function SettingsPage() {
       setUsername(profile.username ?? "");
     }
   }, [profile]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,20 +50,46 @@ export default function SettingsPage() {
     setError(null);
     setSuccess(false);
 
-    const { error } = await updateProfile({
+    let avatarUrl: string | undefined;
+
+    if (avatarFile && user) {
+      const ext = avatarFile.name.split(".").pop() ?? "jpg";
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, avatarFile, { upsert: true });
+
+      if (uploadError) {
+        setError("Avatar upload failed: " + uploadError.message);
+        setSaving(false);
+        return;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+      avatarUrl = publicUrl;
+    }
+
+    const { error: saveError } = await updateProfile({
       display_name: displayName.trim(),
       username: username.trim() || null,
+      ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
     });
 
     setSaving(false);
 
-    if (error) {
-      setError(typeof error === "string" ? error : error.message);
+    if (saveError) {
+      setError(typeof saveError === "string" ? saveError : saveError.message);
     } else {
+      setAvatarFile(null);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     }
   };
+
+  const currentAvatar = avatarPreview ?? profile?.avatar_url ?? null;
+  const initials = (profile?.display_name?.[0] ?? "?").toUpperCase();
 
   if (loading) {
     return (
@@ -72,6 +112,38 @@ export default function SettingsPage() {
       <Header title="Settings" className="px-0" />
 
       <form onSubmit={handleSave} className="space-y-5 mt-2">
+        {/* Avatar */}
+        <div className="flex flex-col items-center gap-2">
+          <label htmlFor="avatar-upload" className="cursor-pointer">
+            <div className="relative h-20 w-20 overflow-hidden rounded-full bg-indigo-600">
+              {currentAvatar ? (
+                <Image
+                  src={currentAvatar}
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                  unoptimized={avatarPreview !== null}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-white">
+                  {initials}
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
+                <span className="text-xs font-medium text-white">Change</span>
+              </div>
+            </div>
+          </label>
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={handleAvatarChange}
+          />
+          <p className="text-xs text-zinc-600">Tap to change photo</p>
+        </div>
+
         {/* Display name */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-zinc-300">
@@ -98,7 +170,9 @@ export default function SettingsPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+              onChange={(e) =>
+                setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+              }
               placeholder="username"
               maxLength={30}
               className="flex-1 bg-transparent text-white placeholder-zinc-600 outline-none"

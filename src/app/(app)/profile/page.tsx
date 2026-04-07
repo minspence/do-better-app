@@ -2,6 +2,7 @@
 
 import { Settings, Crown, LogOut } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { Header } from "@/components/layout/Header";
@@ -28,8 +29,19 @@ export default function ProfilePage() {
 
       {/* Avatar + name */}
       <div className="mb-6 flex flex-col items-center gap-2">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-600 text-3xl font-bold text-white">
-          {profile?.display_name?.[0]?.toUpperCase() ?? "?"}
+        <div className="relative h-20 w-20 overflow-hidden rounded-full bg-indigo-600">
+          {profile?.avatar_url ? (
+            <Image
+              src={profile.avatar_url}
+              alt="Avatar"
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-white">
+              {profile?.display_name?.[0]?.toUpperCase() ?? "?"}
+            </div>
+          )}
         </div>
         <div className="text-center">
           <p className="text-lg font-bold text-white">

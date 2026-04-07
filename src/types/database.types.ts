@@ -105,13 +105,18 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          goal_categories: string[]
+          habit_obstacles: string[]
           id: string
           is_premium: boolean
           last_active_date: string | null
           level: number
           longest_streak: number
+          onboarding_completed: boolean
+          phone: string | null
           premium_expires_at: string | null
           streak_count: number
+          support_preferences: string[]
           trial_started_at: string | null
           username: string | null
           xp: number
@@ -120,13 +125,18 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          goal_categories?: string[]
+          habit_obstacles?: string[]
           id: string
           is_premium?: boolean
           last_active_date?: string | null
           level?: number
           longest_streak?: number
+          onboarding_completed?: boolean
+          phone?: string | null
           premium_expires_at?: string | null
           streak_count?: number
+          support_preferences?: string[]
           trial_started_at?: string | null
           username?: string | null
           xp?: number
@@ -135,13 +145,18 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          goal_categories?: string[]
+          habit_obstacles?: string[]
           id?: string
           is_premium?: boolean
           last_active_date?: string | null
           level?: number
           longest_streak?: number
+          onboarding_completed?: boolean
+          phone?: string | null
           premium_expires_at?: string | null
           streak_count?: number
+          support_preferences?: string[]
           trial_started_at?: string | null
           username?: string | null
           xp?: number
