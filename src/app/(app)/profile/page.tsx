@@ -95,10 +95,12 @@ export default function ProfilePage() {
 
       {/* Actions */}
       <div className="space-y-2">
-        <Button variant="secondary" fullWidth>
-          <Settings className="h-4 w-4" />
-          Settings
-        </Button>
+        <Link href="/settings">
+          <Button variant="secondary" fullWidth>
+            <Settings className="h-4 w-4" />
+            Settings
+          </Button>
+        </Link>
         <Button variant="ghost" fullWidth onClick={signOut}>
           <LogOut className="h-4 w-4" />
           Sign Out

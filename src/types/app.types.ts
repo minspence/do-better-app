@@ -27,23 +27,8 @@ export const CATEGORIES: {
   icon: string;
   href: string;
 }[] = [
-  {
-    id: "self-improvement",
-    label: "Self Improvement",
-    icon: "🧠",
-    href: "/habits?category=self-improvement",
-  },
-  {
-    id: "exercise",
-    label: "Exercise",
-    icon: "💪",
-    href: "/habits?category=exercise",
-  },
-  {
-    id: "memorization",
-    label: "Memorization",
-    icon: "📚",
-    href: "/habits?category=memorization",
-  },
-  { id: "diet", label: "Diet", icon: "🥗", href: "/habits?category=diet" },
+  { id: "self-improvement", label: "Self Improvement", icon: "🧠", href: "/categories/self-improvement" },
+  { id: "exercise", label: "Exercise", icon: "💪", href: "/categories/exercise" },
+  { id: "memorization", label: "Memorization", icon: "📚", href: "/categories/memorization" },
+  { id: "diet", label: "Diet", icon: "🥗", href: "/categories/diet" },
 ];
